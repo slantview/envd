@@ -4,8 +4,12 @@ envd is an daemon for starting and stopping processess using configuration from
 [etcd](https://github.com/coreos/etcd).  You can use it to either run once and 
 exit or to watch a key field for updates and restart your application.
 
-The goal of this project is to provide highly available configuration data
-independent of application deployment.
+The configuration data is pulled down and provided to the application via local
+environment variables.  You can then use these variables within your 
+application like normal.
+
+The goal of this project is to provide highly available, secure configuration 
+data independent of application deployment or stack.
 
 
 ## Configuration
