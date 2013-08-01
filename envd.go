@@ -12,14 +12,22 @@ import (
 
 var envName string
 var config string
+var cert string
+var key string
+var cacert string
 var daemonize bool
 var debug bool
+var watch bool
 
 func init() {
 	flag.StringVar(&envName, "e", "default", "Environment name to watch.")
-	flag.StringVar(&config, "c", "/etc/envd.yml", "envd config file.")
+	flag.StringVar(&config, "c", "/etc/envd/config.yml", "envd config file.")
 	flag.BoolVar(&daemonize, "d", false, "Daemonize after launch.")
 	flag.BoolVar(&debug, "D", false, "Daemonize after launch.")
+	flag.BoolVar(&watch, "w", false, "Watch for updates and restart if changed.")
+	flag.StringVar(&config, "key", "/etc/envd/client.key", "Client key file.")
+	flag.StringVar(&config, "cert", "/etc/envd/client.crt", "Client cert file.")
+	flag.StringVar(&config, "cacert", "/etc/envd/cacert.crt", "Client CA cert file.")
 }
 
 func runCommand(e *Environment, name string) {
