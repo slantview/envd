@@ -10,6 +10,8 @@ independent of application deployment.
 
 ## Configuration
 
+/etc/envd.yml
+
 ```yaml
 server: 
     - https://localhost:4001
@@ -54,6 +56,14 @@ $ envd -e my-environment-variables -w -d /start/my/app
 ```
 This will start the app, daemonize and restart the app if any variables are
 changed.
+
+
+## Additional options
+
+* -c /etc/envd.yml - Path to global configuration file.
+* -key /path/to/myclient.key
+* -cert /path/to/myclient.crt
+* -cacert /path/to/myclientCA.crt
 
 
 ## Author
