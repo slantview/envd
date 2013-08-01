@@ -24,36 +24,29 @@ cacert: /etc/envd/clientCA.crt
 ## Usage
 
 ```bash
-
 $ envd -e my-environment-variables /start/my/app
-
 ```
+
 This will run once and exit when the application exits.
 
 
 ```bash
-
 $ envd -e my-environment-variables -d /start/my/app
-
-
 ```
 This will start the app and daemonize in the background.
 
 
 ```bash
-
 $ envd -e my-environment-variables -w /start/my/app
-
 ```
 This will start the app, watch the variables for updates and restart the app
 if any variables are changed in real time.
 
 
 ```bash
-
 $ envd -e my-environment-variables -w -d /start/my/app
-
 ```
+
 This will start the app, daemonize and restart the app if any variables are
 changed.
 
