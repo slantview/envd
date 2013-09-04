@@ -1,0 +1,28 @@
+---
+compile: 
+  type: custom
+  custom: 
+    exec: go
+    args: get -d ./...
+
+test:
+  type: custom
+  custom: 
+    exec: go
+    args: test -v
+
+version:
+  bump: auto
+  default: patch
+
+package: 
+  type: custom
+  custom: 
+    exec: go
+    args: build
+    output: envd
+
+release:
+  type: nexus
+  nexus:
+    artifact: com.riotgames.artifacts:envd:VERSION:tgz
