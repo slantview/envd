@@ -1,2 +1,2 @@
-envd
-VERSION
+bin/*
+.deps
