@@ -67,7 +67,7 @@ func (e Environment) Env() []string {
 }
 
 func (e Environment) Update() {
-
+	// TODO
 }
 
 func NewEnvironmentVariable(name string, value string) *EnvironmentVariable {
