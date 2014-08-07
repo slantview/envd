@@ -1,5 +1,7 @@
 # envd 
 
+[![Build Status](https://travis-ci.org/slantview/envd.svg)](https://travis-ci.org/slantview/envd)
+
 envd is an daemon for starting and stopping processess using configuration from 
 [etcd](https://github.com/coreos/etcd).  You can use it to either run once and 
 exit or to watch a key field for updates and restart your application.
