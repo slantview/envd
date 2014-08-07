@@ -2,55 +2,103 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/codegangsta/cli"
+	"github.com/op/go-logging"
 )
-
-var envName string
-var config string
-var cert string
-var key string
-var cacert string
-var daemonize bool
-var debug bool
-var watch bool
 
 const AppVersion = "0.1.0"
 
+var log = logging.MustGetLogger("envd")
+
 func init() {
-	flag.StringVar(&envName, "e", "default", "Environment name to watch.")
-	flag.StringVar(&config, "c", "/etc/envd/config.yml", "envd config file.")
-	flag.BoolVar(&daemonize, "d", false, "Daemonize after launch.")
-	flag.BoolVar(&debug, "D", false, "Daemonize after launch.")
-	flag.BoolVar(&watch, "w", false, "Watch for updates and restart if changed.")
-	flag.StringVar(&config, "key", "/etc/envd/client.key", "Client key file.")
-	flag.StringVar(&config, "cert", "/etc/envd/client.crt", "Client cert file.")
-	flag.StringVar(&config, "cacert", "/etc/envd/cacert.crt", "Client CA cert file.")
+	cli.AppHelpTemplate = `NAME:
+   {{.Name}} - {{.Usage}}
+
+USAGE:
+   {{.Name}} [global options] command
+
+VERSION:
+   {{.Version}}
+
+COMMANDS:
+   {{range .Commands}}{{.Name}}{{with .ShortName}}, {{.}}{{end}}{{ "\t" }}{{.Usage}}
+   {{end}}
+GLOBAL OPTIONS:
+   {{range .Flags}}{{.}}
+   {{end}}
+`
 }
 
-func runCommand(e *Environment, name string) {
-	cmd := exec.Command(name)
+func main() {
+	app := cli.NewApp()
+	app.Name = "envd"
+	app.Usage = "Application launcher using environment variables from etcd."
+	app.Version = AppVersion
+	app.Action = runCommand
+	app.Flags = []cli.Flag{
+		cli.BoolFlag{"verbose, V", "Shows verbose logging."},
+		cli.StringFlag{"environment, e", "default", "Environment name to watch."},
+		cli.BoolFlag{"d", "Daemonize after launch."},
+		cli.BoolFlag{"debug, D", "Turn on debug output."},
+		cli.BoolFlag{"watch, w", "Watch for updates and restart if changed."},
+		cli.StringFlag{"key", "/etc/envd/client.key", "Client key file."},
+		cli.StringFlag{"cert", "/etc/envd/client.crt", "Client cert file."},
+		cli.StringFlag{"cacert", "/etc/envd/cacert.crt", "Client CA cert file."},
+		cli.StringFlag{"server", "http://localhost:4001", "Host to connect to etcd."},
+	}
+	app.Before = func(ctx *cli.Context) error {
+		if ctx.GlobalBool("verbose") || ctx.GlobalBool("debug") {
+			logging.SetLevel(logging.DEBUG, "envd")
+		} else {
+			logging.SetLevel(logging.INFO, "envd")
+		}
+
+		return nil
+	}
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatalf("%s", err)
+	}
+}
+
+func runCommand(ctx *cli.Context) {
+	e := NewEnvironment(ctx.GlobalString("environment"))
+
+	etcdHosts := strings.Split(ctx.GlobalString("server"), ",")
+
+	if err := e.GetEnvironment(etcdHosts); err != nil {
+		log.Fatalf("Unable to get environment: %s", err)
+	}
+
+	args := ctx.Args()
+	if len(args) < 1 {
+		cli.ShowAppHelp(ctx)
+		log.Fatal("No command specified.")
+	}
+
+	log.Debug("Running command '%s %s'", args[0], strings.Join(args[1:], " "))
+	cmd := exec.Command(args[0], args[1:]...)
 	cmd.Env = e.Env()
 
 	stdout, outErr := cmd.StdoutPipe()
 	if outErr != nil {
-		log.Println(outErr)
+		log.Error("Unable to get StdoutPipe: %s", outErr)
 	}
 
 	stderr, errErr := cmd.StderrPipe()
 	if errErr != nil {
-		log.Println(errErr)
+		log.Error("Unable to get StderrPipe: %s", errErr)
 	}
 
-	err := cmd.Start()
-	if err != nil {
-		log.Fatal(fmt.Sprintf("Command %s failed: %s", name, err))
+	if err := cmd.Start(); err != nil {
+		log.Fatal("Command %s failed: %s", strings.Join(args, " "), err)
 	}
 
 	var outBuffer bytes.Buffer
@@ -67,35 +115,4 @@ func runCommand(e *Environment, name string) {
 	}
 
 	cmd.Wait()
-}
-
-func main() {
-	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage: %s <command> <options>\n", os.Args[0])
-		flag.PrintDefaults()
-		os.Exit(2)
-	}
-
-	flag.Parse()
-
-	if debug {
-		log.Println(fmt.Sprintf("Flag: envName: %s", envName))
-		log.Println(fmt.Sprintf("Flag: config: %s", config))
-		log.Println(fmt.Sprintf("Flag: daemonize: %t", daemonize))
-	}
-
-	if len(flag.Args()) > 0 {
-		e := NewEnvironment(envName)
-		err := e.GetEnvironment()
-		if err != nil {
-			log.Println(fmt.Sprintf("Error getting environment from etcd: %s", err))
-			os.Exit(-1)
-		}
-		if debug {
-			log.Println(fmt.Sprintf("Environment: %s", e.Env()))
-		}
-		runCommand(e, flag.Arg(0))
-	} else {
-		flag.Usage()
-	}
 }

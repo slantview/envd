@@ -4,7 +4,7 @@ outbin := ${bindir}/envd
 build: get_deps ${outbin}
 build_all: get_deps
 	go build -a -o ${outbin}
-${outbin}: dockver.go
+${outbin}: envd.go
 	go build -o ${outbin}
 clean:
 	rm -f ${bindir}/*

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -31,24 +30,26 @@ func NewEnvironment(name string, variables ...EnvironmentVariable) *Environment 
 	return &e
 }
 
-func (e *Environment) GetEnvironment() error {
-	results, err := etcd.Get(e.name)
+func (e *Environment) GetEnvironment(hosts []string) error {
+	c := etcd.NewClient(hosts)
+	response, err := c.Get(e.name, true, false)
 	if err != nil {
-		if len(results) > 0 {
-			log.Printf("Get failed with %s %s %v", results[0].Key, results[0].Value, results[0].TTL)
-		}
+		// if len(response.Node.Nodes) > 0 {
+		// 	log.Error("Get failed with %s %s %v", response.Node.Key, response.Node.Value, response.Node.TTL)
+		// }
 
 		return err
 	}
 
-	for i := 0; i < len(results); i++ {
-		e.AddEnvironmentVariable(NewEnvironmentVariable(strings.Replace(results[i].Key, e.KeyName(), "", 1), results[i].Value))
+	for _, node := range response.Node.Nodes {
+		log.Debug("Found variable: [%s] = %s", strings.Replace(node.Key, e.KeyName(), "", 1), node.Value)
+		e.AddEnvironmentVariable(NewEnvironmentVariable(strings.Replace(node.Key, e.KeyName(), "", 1), node.Value))
 	}
 	return nil
 }
 
 func (e *Environment) KeyName() string {
-	return fmt.Sprintf("/%s/", e.name)
+	return fmt.Sprintf("%s/", e.name)
 }
 
 func (e *Environment) AddEnvironmentVariable(ev *EnvironmentVariable) {

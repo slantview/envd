@@ -1,6 +1,0 @@
----
-server: 
-    - https://localhost:4001
-key: /etc/envd/myclient.key 
-cert: /etc/envd/myclient.crt 
-cacert: /etc/envd/clientCA.crt
