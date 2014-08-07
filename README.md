@@ -14,20 +14,34 @@ The goal of this project is to provide highly available, secure configuration
 data independent of application deployment or stack.
 
 
-## Configuration
-
-/etc/envd.yml
-
-```yaml
-server: 
-    - https://localhost:4001
-key: /etc/envd/myclient.key 
-cert: /etc/envd/myclient.crt 
-cacert: /etc/envd/clientCA.crt
-```
-
-
 ## Usage
+
+```
+NAME:
+   envd - Application launcher using environment variables from etcd.
+
+USAGE:
+   envd [global options] command
+
+VERSION:
+   0.1.0
+
+COMMANDS:
+   help, h  Shows a list of commands or help for one command
+   
+GLOBAL OPTIONS:
+   --verbose, -V            Shows verbose logging.
+   --environment, -e 'default'      Environment name to watch.
+   -d                   Daemonize after launch.
+   --debug, -D              Turn on debug output.
+   --watch, -w              Watch for updates and restart if changed.
+   --key '/etc/envd/client.key'     Client key file.
+   --cert '/etc/envd/client.crt'    Client cert file.
+   --cacert '/etc/envd/cacert.crt'  Client CA cert file.
+   --server 'http://localhost:4001' Host to connect to etcd.
+   --version, -v            print the version
+   --help, -h               show help
+```
 
 ```bash
 $ envd -e my-environment-variables /start/my/app
@@ -55,14 +69,6 @@ $ envd -e my-environment-variables -w -d /start/my/app
 
 This will start the app, daemonize and restart the app if any variables are
 changed.
-
-
-## Additional options
-
-* -c /etc/envd.yml - Path to global configuration file.
-* -key /path/to/myclient.key
-* -cert /path/to/myclient.crt
-* -cacert /path/to/myclientCA.crt
 
 
 ## Author
