@@ -13,6 +13,10 @@
         {
             "ImportPath": "github.com/op/go-logging",
             "Rev": "c1b91128b40ead0e98dbc63cde57c0541feaa6c1"
+        },
+        {
+            "ImportPath": "github.com/coreos/etcdctl",
+            "Rev": "2fef54f1cbc777f8a440275ce10f0ac65c6e75f6"
         }
     ]
 }
