@@ -1,14 +1,12 @@
 language: go
 
 go:
-  - 1.0
-  - 1.1
-  - 1.2
   - 1.3
   - tip
 
-install: 
+before_install: 
   - go get github.com/tools/godep
   - make get_deps
-  
-script: make test
+
+script: 
+  - make test
