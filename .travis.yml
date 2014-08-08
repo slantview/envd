@@ -10,6 +10,7 @@ install:
   - go get -v -u github.com/tools/godep
   - godep get gopkg.in/check.v1
   - godep get github.com/coreos/etcd
+  - godep get github.com/coreos/etcdctl
   - make build
 
 script: 
