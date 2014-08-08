@@ -20,6 +20,8 @@ var _ = Suite(&EnvdSuite{})
 
 func (s *EnvdSuite) SetUpTest(c *C) {
 	client := etcd.NewClient([]string{"http://127.0.0.1:4001/"})
+	client.DeleteDir("/environments")
+	client.CreateDir("/environments", 0)
 	client.DeleteDir("/environments/test")
 	client.CreateDir("/environments/test", 0)
 	client.Set("/environments/test/VARIABLE1", "envd_var1", 0)

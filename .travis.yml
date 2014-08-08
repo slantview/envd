@@ -9,7 +9,8 @@ install:
   - export PATH=$PATH:$HOME/gopath/bin
   - go get -v -u github.com/tools/godep
   - godep get gopkg.in/check.v1
+  - godep get github.com/coreos/etcd
   - make build
 
 script: 
-  - godep go test -v
+  - make test
