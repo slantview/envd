@@ -8,8 +8,8 @@ go:
 install: 
   - export PATH=$PATH:$HOME/gopath/bin
   - go get -v -u github.com/tools/godep
-  - which godep
-  - godep restore
+  - godep get gopkg.in/check.v1
+  - make build
 
 script: 
-  - godep go test -v .
+  - godep go test -v
