@@ -6,9 +6,10 @@ go:
   - tip
 
 install: 
-  - export PATH=$PATH:$GOPATH/bin
+  - export PATH=$PATH:$HOME/gopath/bin
   - go get -v -u github.com/tools/godep
+  - which godep
   - godep restore
 
 script: 
-  - make test
+  - godep go test -v .
