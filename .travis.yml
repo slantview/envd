@@ -7,7 +7,7 @@ go:
 
 install: 
   - export PATH=$PATH:$GOPATH/bin
-  - go get github.com/tools/godep
+  - go get -v -u github.com/tools/godep
   - godep restore
 
 script: 
