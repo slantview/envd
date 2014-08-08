@@ -5,7 +5,7 @@ killall etcd
 
 echo "Starting etcd..."
 nohup etcd > /dev/null &
-sleep 3
+sleep 5
 
 echo "Adding test variables..."
 etcdctl set /environments/test/VARIABLE1 "envd_var1"
