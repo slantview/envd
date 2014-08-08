@@ -14,6 +14,4 @@ get_deps: .deps
 	godep restore
 	touch .deps
 test:
-	etcd &
-	sleep 3
-	go test -v .
+	./test.sh
